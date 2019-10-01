@@ -23,7 +23,7 @@ max_t = 20
 
 def draw(solver, t0=0, x0=13.41265629, y0=13.46430003, z0=33.46156416):
     for r in rs:
-        ts, xs, ys, zs = solver(r)
+        ts, xs, ys, zs = solver(r, t0, x0, y0, z0)
 
         print('r = {0}'.format(r))
         plt.plot(ts, xs, 'red')
