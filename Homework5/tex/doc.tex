@@ -1,0 +1,113 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\lstset{
+	language=Octave,
+	frame=single,
+	xleftmargin=.1\textwidth, xrightmargin=.1\textwidth
+}
+\usepackage{graphicx}
+\usepackage{mathtools, nccmath}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2.1cm,bindingoffset=0cm]{geometry}
+\usepackage{amsfonts}
+\usepackage{minted}
+\usepackage{amssymb}
+\usepackage{textcomp}
+\usepackage[20pt]{extsizes}
+
+\graphicspath{{/pic}}
+\DeclarePairedDelimiter{\nint}\lfloor\rfloor
+\DeclarePairedDelimiter{\hint}\lceil\rceil
+
+\title{Исследование схемы}
+
+\begin{document}
+	\maketitle
+	
+Решаем уравнение
+
+$\frac{\partial T}{\partial t} +u \frac{\partial T}{\partial x} - \chi \frac{\partial^2 T}{\partial x^2} = 0$
+\newline
+\newline
+Используем явную разностную схему против потока
+\newline
+\newline
+$
+\frac{T^{n + 1}_k - T^n_k}{\Delta t} + u \frac{T^n_k - T^n_{k - 1}}{\Delta x} - \chi \frac{T^n_{k + 1} - 2 \cdot T^n_k + T^n_{k - 1}}{\Delta x ^ 2} = 0
+$
+\newline
+\newline
+$
+T^{n + 1}_k - T^n_k + \frac{u \cdot \Delta t}{\Delta x}(T^n_k - T^n_{k - 1}) + \frac{\chi \cdot \Delta t}{\Delta x^2}(T^n_{k + 1} - 2 \cdot T^n_k + T^n_{k - 1}) = 0
+$
+\newline
+\newline
+$
+T^{n + 1}_k - T^n_k +s \cdot (T^n_k - T^n_{k - 1}) - r \cdot (T^n_{k + 1} - 2 \cdot T^n_k + T^n_{k - 1}) = 0
+$
+\newline
+\newline
+$
+\lambda^{n + 1} \cdot e^{i \alpha k}- \lambda^n \cdot e^{i \alpha k} +s \cdot (\lambda^n \cdot e^{i \alpha k}- \lambda^n \cdot e^{i \alpha (k - 1)}) - r \cdot (\lambda^n \cdot e^{i \alpha (k + 1)} - 2 \cdot \lambda^n \cdot e^{i \alpha k} + \lambda^n \cdot e^{i \alpha (k - 1)}) = 0
+$
+\newline
+\newline
+$
+\lambda \cdot \lambda^n \cdot e^{i \alpha k}- \lambda^n \cdot e^{i \alpha k} +s \cdot \lambda^n \cdot e^{i \alpha k} \cdot (1 - e^{- i \alpha}) - r \cdot \lambda^n \cdot e^{i \alpha k} \cdot (e^{i \alpha} - 2 + e^{- i \alpha}) = 0
+$
+\newline
+\newline
+$
+\lambda - 1 +s \cdot (1 - e^{- i \alpha}) - r \cdot (e^{i \alpha} - 2 + e^{- i \alpha}) = 0
+$
+\newline
+\newline
+$
+\lambda = 1 - s \cdot (1 - e^{- i \alpha}) + r \cdot (e^{i \alpha} - 2 + e^{- i \alpha}) = 1 - s \cdot (1 - cos(\alpha) + i \cdot sin(\alpha)) + r \cdot (cos(\alpha) + i \cdot sin(\alpha) - 2 + cos(\alpha) - i \cdot sin(\alpha))
+= 1 - s + s \cdot (cos(\alpha) - i \cdot sin(\alpha)) + r \cdot (2 \cdot cos(\alpha) - 2) = 1 - s - 2r+ (s + 2r) \cdot cos(\alpha) - i \cdot s \cdot sin(\alpha)
+$
+\newline
+\newline
+$
+|\lambda|^2 = ((1 - s - 2r)+ (s + 2r) \cdot cos(\alpha))^2 + s \cdot sin^2(\alpha) = (1 - s - 2r)^2 + 2 \cdot (1 - s - 2r)(s + 2r) \cdot cos(\alpha) + (s + 2r)^2 \cdot cos^2(\alpha) + s^2 \cdot sin^2(\alpha) 
+= (1 - s - 2r)^2 + 2 \cdot (1 - s - 2r)(s + 2r) \cdot (1 - 2sin^2(\frac{\alpha}{2})) + (s + 2r)^2 \cdot (1 - sin^2(\alpha)) + s^2 \cdot sin^2(\alpha)
+= (1 - s - 2r)^2 + 2 \cdot (1 - s - 2r)(s + 2r)  - 2 \cdot (1 - s - 2r)(s + 2r) \cdot 2sin^2(\frac{\alpha}{2}) + (s + 2r)^2  -  (s + 2r)^2 \cdot sin^2(\alpha) + s^2 \cdot sin^2(\alpha)
+= (1 - s - 2r + s + 2r)^2 - 2 \cdot (1 - s - 2r)(s + 2r) \cdot 2sin^2(\frac{\alpha}{2}) -  (s + 2r)^2 \cdot sin^2(\alpha) + s^2 \cdot sin^2(\alpha)
+= 1 - 4 \cdot (1 - s - 2r)(s + 2r) \cdot sin^2(\frac{\alpha}{2}) -  (s + 2r)^2 \cdot sin^2(\alpha) + s^2 \cdot sin^2(\alpha)
+= 1 - 4 \cdot (1 - s - 2r)(s + 2r) \cdot sin^2(\frac{\alpha}{2}) -  4r (r + s) \cdot sin^2(\alpha) < 1
+$
+\newline
+\newline
+$
+4 \cdot (1 - s - 2r)(s + 2r) \cdot sin^2(\frac{\alpha}{2}) +  4r (r + s) \cdot sin^2(\alpha) > 0
+$
+\newline
+\newline
+$
+r(r + s) \cdot sin^2(\alpha) > (s + 2r - 1)(s + 2r) \cdot sin^2(\frac{\alpha}{2})
+$
+\newline
+\newline
+Докажем, что ответом является $s + 2r < 0$
+
+\begin{enumerate}
+\item Достаточность
+\newline
+\newline
+Пусть $s + 2r < 0$. Тогда $\forall \alpha : (s + 2r - 1)(s + 2r) \cdot sin^2(\frac{\alpha}{2}) < 0$. Заметим также, что $\forall r, s, \alpha : r(r + s) \cdot sin^2(\alpha) \geq 0$.
+\newline
+\newline
+Поэтому $s + 2r < 0 \Rightarrow \forall \alpha : r(r + s) \cdot sin^2(\alpha) > (s + 2r - 1)(s + 2r) \cdot sin^2(\frac{\alpha}{2})$
+
+\item  Необходтмость
+
+Пусть $s + 2r \geq 0$. Тогда рассмотрим $\alpha = \pi$. Тогда $r(r + s) \cdot sin^2(\alpha) = r(r + s) \cdot sin^2(\pi) = 0$, а $(s + 2r - 1)(s + 2r) \cdot sin^2(\frac{\alpha}{2}) = (s + 2r - 1)(s + 2r) \cdot sin^2(\frac{\pi}{2}) = (s + 2r - 1)(s + 2r) \geq 0$.
+
+То есть $\exists \alpha = \pi : r(r + s) \cdot sin^2(\alpha) \leq (s + 2r - 1)(s + 2r) \cdot sin^2(\frac{\alpha}{2})$ 
+\end{enumerate}
+
+\end{document}
